@@ -1,14 +1,14 @@
  {
-  "name":        "@absolunet/cli-helper",
+  "name":        "@absolunet/cli",
   "version":     "0.0.1",
-  "description": "CLI helper",
+  "description": "CLI utilities",
   "definition":  "",
-  "homepage":    "https://github.com/absolunet/cli-helper",
+  "homepage":    "https://github.com/absolunet/node-cli",
   "author":      { "name": "Absolunet", "url": "http://absolunet.com/" },
 
   "license":    "MIT",
-  "repository": { "url":   "git://github.com/absolunet/cli-helper.git", "type":"git" },
-  "bugs":       { "url": "https://github.com/absolunet/cli-helper/issues" },
+  "repository": { "url":   "git://github.com/absolunet/node-cli.git", "type":"git" },
+  "bugs":       { "url": "https://github.com/absolunet/node-cli/issues" },
 
   "engines": { "node": ">= 7.7.3" },
   "scripts": {

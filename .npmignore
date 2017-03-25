@@ -4,4 +4,4 @@ test
 .gitignore
 .sublimelinterrc
 .travis.yml
-cli-helper.sublime-project
+cli.sublime-project

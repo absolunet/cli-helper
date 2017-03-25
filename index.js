@@ -1,15 +1,17 @@
 //--------------------------------------------------------
-//-- CLI helper
+//-- CLI utilities
 //--------------------------------------------------------
 'use strict';
 
 const echo = console.log; // eslint-disable-line no-console
 
-const os        = require('os');
-const path      = require('path');
-const readPkgUp = require('read-pkg-up');
-const chalk     = require('chalk');
-const pad       = require('pad');
+const os          = require('os');
+const path        = require('path');
+const readPkgUp   = require('read-pkg-up');
+const chalk       = require('chalk');
+const pad         = require('pad');
+// const widestLine  = require('widest-line');
+// const stringWidth = require('string-width');
 
 delete require.cache[__filename];
 const pkgPath = path.dirname(module.parent.filename);
@@ -21,7 +23,7 @@ const { pkg } = readPkgUp.sync({ cwd:pkgPath });
 
 
 //-- Static properties
-const STATIC = global.___AbsolunetCLIHelper___ ? global.___AbsolunetCLIHelper___ : global.___AbsolunetCLIHelper___ = {
+const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.___AbsolunetCli___ = {
 	commands:  {},
 	taskWidth: {},
 	fullUsage: {},
@@ -43,7 +45,7 @@ const printCmd = (cmd, width = STATIC.baseWidth, spacer = 1) => {
 
 
 
-module.exports = class CLIHelper {
+module.exports = class Cli {
 
 	//-- Usager helpers
 	static get PLACEHOLDER() {
@@ -59,7 +61,7 @@ module.exports = class CLIHelper {
 	}
 
 	static optionalPlaceholder(name) {
-		return `${chalk.reset('[')}${CLIHelper.placeholder(name)}${chalk.reset(']')}`;
+		return `${chalk.reset('[')}${this.placeholder(name)}${chalk.reset(']')}`;
 	}
 
 
@@ -113,8 +115,8 @@ module.exports = class CLIHelper {
 
 
 	//-- Show task usage and die
-	static showTaskUsage(cli) {
-		echo(`\n${CLIHelper.getTaskUsage(cli.input[0])}`);
+	static showTaskUsage(meowCli) {
+		echo(`\n${this.getTaskUsage(meowCli.input[0])}`);
 		process.exit(2); // eslint-disable-line no-process-exit
 	}
 
@@ -132,16 +134,16 @@ module.exports = class CLIHelper {
 	}
 
 	//-- Refuse flags
-	static refuseFlags(cli) {
-		if (Object.keys(cli.flags).length) {
-			CLIHelper.showTaskUsage(cli);
+	static refuseFlags(meowCli) {
+		if (Object.keys(meowCli.flags).length) {
+			this.showTaskUsage(meowCli);
 		}
 	}
 
 	//-- Refuse flags & arguments
-	static refuseFlagsAndArguments(cli) {
-		if (cli.input.length > 1 || Object.keys(cli.flags).length) {
-			CLIHelper.showTaskUsage(cli);
+	static refuseFlagsAndArguments(meowCli) {
+		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length) {
+			this.showTaskUsage(meowCli);
 		}
 	}
 
