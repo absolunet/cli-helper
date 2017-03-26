@@ -1,6 +1,6 @@
  {
   "name":        "@absolunet/cli",
-  "version":     "0.0.1",
+  "version":     "0.0.2",
   "description": "CLI utilities",
   "definition":  "",
   "homepage":    "https://github.com/absolunet/node-cli",
@@ -16,9 +16,7 @@
   },
 
   "devDependencies": {
-    "eslint":       "3.18.0",
-    "mocha":        "3.2.0",
-    "mocha-eslint": "3.0.1"
+    "@absolunet/tester": "0.0.2"
  },
 
   "dependencies": {
