@@ -1,4 +1,4 @@
- {
+{
   "name":        "@absolunet/cli",
   "version":     "0.0.2",
   "description": "CLI utilities",
@@ -10,7 +10,7 @@
   "repository": { "url":   "git://github.com/absolunet/node-cli.git", "type":"git" },
   "bugs":       { "url": "https://github.com/absolunet/node-cli/issues" },
 
-  "engines": { "node": ">= 7.7.3" },
+  "engines": { "node": ">= 7.7.4" },
   "scripts": {
     "test": "mocha"
   },
@@ -21,6 +21,7 @@
 
   "dependencies": {
     "chalk":       "^1.1.3",
+    "glob":        "^7.1.1",
     "pad":         "^1.1.0",
     "read-pkg-up": "^2.0.0"
   }
