@@ -5,14 +5,14 @@
 
 const echo = console.log; // eslint-disable-line no-console
 
-const os          = require('os');
-const path        = require('path');
-const glob        = require('glob');
-const readPkgUp   = require('read-pkg-up');
-const chalk       = require('chalk');
-const pad         = require('pad');
-// const widestLine  = require('widest-line');
-// const stringWidth = require('string-width');
+const os           = require('os');
+const path         = require('path');
+const glob         = require('glob');
+const readPkgUp    = require('read-pkg-up');
+const chalk        = require('chalk');
+const indentString = require('indent-string');
+const stringWidth  = require('string-width');
+const pad          = require('@absolunet/terminal-pad');
 
 delete require.cache[__filename];
 const pkgPath = path.dirname(module.parent.filename);
@@ -26,9 +26,7 @@ const { pkg } = readPkgUp.sync({ cwd:pkgPath });
 //-- Static properties
 const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.___AbsolunetCli___ = {
 	commands:  {},
-	taskWidth: {},
 	fullUsage: {},
-	baseWidth: 0,
 	tasks:     {
 		path: '',
 		list: []
@@ -36,14 +34,21 @@ const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.__
 };
 
 
-//-- Command usage
-const printCmd = (cmd, width = STATIC.baseWidth, spacer = 1) => {
-	const [task, subtask] = cmd.split(' ');
-	const [name, desc, delta = 0] = subtask ? STATIC.commands[task][subtask] : STATIC.commands[task];
 
-	return `${pad(chalk.yellow(name), width + delta)}${' '.repeat(spacer)}${desc}`;
+//-- Command details
+const cmdDetails = (cmd) => {
+	const [task, subtask] = cmd.split(' ');
+	const [call, desc]    = subtask ? STATIC.commands[task][subtask] : STATIC.commands[task];
+
+	return { call, desc };
 };
 
+//-- Command usage
+const cmdUsage = (cmd, length, spacer) => {
+	const { call, desc } = cmdDetails(cmd);
+
+	return `${chalk.yellow(length ? pad(call, length) : call)}${' '.repeat(spacer)}${desc}`;
+};
 
 
 
@@ -53,14 +58,6 @@ const printCmd = (cmd, width = STATIC.baseWidth, spacer = 1) => {
 module.exports = class Cli {
 
 	//-- Usager helpers
-	static get PLACEHOLDER() {
-		return 10;
-	}
-
-	static get OPTIONALPLACEHOLDER() {
-		return 26;
-	}
-
 	static get placeholder() {
 		return chalk.green;
 	}
@@ -71,28 +68,39 @@ module.exports = class Cli {
 
 
 	//-- Set tasks
-	static setUsageTasks(commands, taskWidth) {
-		STATIC.commands  = commands;
-		STATIC.taskWidth = taskWidth;
+	static setUsageTasks(commands) {
+		STATIC.commands = commands;
+
 	}
 
 
 	//-- Set full usage
-	static setFullUsage(fullUsage, baseWidth) {
+	static setFullUsage(fullUsage) {
 		STATIC.fullUsage = fullUsage;
-		STATIC.baseWidth = baseWidth;
 	}
 
 
 	//-- Get full usage
 	static get fullUsage() {
+		const length = (() => {
+			const lengths = [];
+			Object.keys(STATIC.fullUsage).forEach((group) => {
+				STATIC.fullUsage[group].forEach((cmd) => {
+					const { call } = cmdDetails(cmd);
+					lengths.push(stringWidth(call));
+				});
+			});
+
+			return Math.max(...lengths);
+		})();
+
 		let usage = `Usage: ${chalk.yellow(pkg.name)} ${chalk.cyan('<command>')}\n`;
 
 		Object.keys(STATIC.fullUsage).forEach((group) => {
 			usage += `\n${chalk.underline(group)}\n`;
 
-			STATIC.fullUsage[group].forEach((task) => {
-				usage += `${printCmd(task)}\n`;
+			STATIC.fullUsage[group].forEach((cmd) => {
+				usage += `${cmdUsage(cmd, length, 5)}\n`;
 			});
 		});
 
@@ -106,16 +114,27 @@ module.exports = class Cli {
 	static getTaskUsage(task) {
 		const subs = !Array.isArray(STATIC.commands[task]);
 
-		let usage = `  ${chalk.underline('Usage:')}\n`;
+		let usage = `${chalk.underline('Usage:')}\n`;
 		if (subs) {
-			Object.values(STATIC.commands[task]).forEach((item) => {
-				usage += `  ${chalk.yellow(`${pkg.name} ${task}`)} ${printCmd(`${task} ${item[0]}`, STATIC.taskWidth[task])}\n`;
+
+			const length = (() => {
+				const lengths = [];
+				Object.values(STATIC.commands[task]).forEach((subtask) => {
+					const { call } = cmdDetails(`${task} ${subtask[0]}`);
+					lengths.push(stringWidth(call));
+				});
+
+				return Math.max(...lengths);
+			})();
+
+			Object.values(STATIC.commands[task]).forEach((subtask) => {
+				usage += `${chalk.yellow(`${pkg.name} ${task}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 			});
 		} else {
-			usage += `  ${chalk.yellow(pkg.name)} ${printCmd(task, 0, 3)}\n`;
+			usage += `${chalk.yellow(pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
 		}
 
-		return usage;
+		return indentString(usage, 2);
 	}
 
 
