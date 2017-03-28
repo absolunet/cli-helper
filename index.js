@@ -62,6 +62,10 @@ module.exports = class Cli {
 		return chalk.green;
 	}
 
+	static optional(name) {
+		return `${chalk.reset('[')}${chalk.yellow(name)}${chalk.reset(']')}`;
+	}
+
 	static optionalPlaceholder(name) {
 		return `${chalk.reset('[')}${this.placeholder(name)}${chalk.reset(']')}`;
 	}
@@ -71,6 +75,12 @@ module.exports = class Cli {
 	static setUsageTasks(commands) {
 		STATIC.commands = commands;
 
+	}
+
+
+	//-- Get binary name
+	static get binName() {
+		return pkg.name;
 	}
 
 
