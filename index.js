@@ -44,6 +44,7 @@ const cmdDetails = (cmd) => {
 	return { call, desc };
 };
 
+
 //-- Command usage
 const cmdUsage = (cmd, length, spacer) => {
 	const { call, desc } = cmdDetails(cmd);
@@ -51,6 +52,8 @@ const cmdUsage = (cmd, length, spacer) => {
 	return `${chalk.yellow(length ? pad(call, length) : call)}${' '.repeat(spacer)}${desc}`;
 };
 
+
+//-- Initialize autocomplete
 const initAutocomplete = () => {
 
 	// Add array of params
@@ -125,7 +128,7 @@ const initAutocomplete = () => {
 
 module.exports = class Cli {
 
-	//-- Usager helpers
+	//-- User helpers
 	static get placeholder() {
 		return chalk.green;
 	}
