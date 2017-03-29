@@ -9,6 +9,7 @@ const os           = require('os');
 const path         = require('path');
 const glob         = require('glob');
 const readPkgUp    = require('read-pkg-up');
+const omelette     = require('omelette');
 const chalk        = require('chalk');
 const indentString = require('indent-string');
 const stringWidth  = require('string-width');
@@ -50,6 +51,73 @@ const cmdUsage = (cmd, length, spacer) => {
 	return `${chalk.yellow(length ? pad(call, length) : call)}${' '.repeat(spacer)}${desc}`;
 };
 
+const initAutocomplete = () => {
+
+	// Add array of params
+	const _addParams = (tree, lists) => {
+		if (lists) {
+			lists[0].forEach((param1) => {
+				tree[param1] = {};
+
+				if (lists[1]) {
+					lists[1].forEach((param2) => {
+						tree[param1][param2] = {};
+					});
+				}
+			});
+		}
+	};
+
+	// Build autocomplete tree
+	const autocomplete = {};
+	Object.keys(STATIC.commands).forEach((task) => {
+		const treeTask = STATIC.commands[task];
+		autocomplete[task] = {};
+
+		if (!Array.isArray(treeTask)) {
+			Object.keys(treeTask).forEach((subtask) => {
+				const treeSubtask = treeTask[subtask];
+				autocomplete[task][subtask] = {};
+				_addParams(autocomplete[task][subtask], treeSubtask[2]);
+			});
+
+		} else {
+			_addParams(autocomplete[task], treeTask[2]);
+		}
+	});
+
+
+	// Breks eggs
+	const complete = omelette(pkg.name);
+
+	complete.on('$1', function() {
+		try {
+			this.reply(Object.keys(autocomplete));
+		} catch (e) {} // eslint-disable-line no-empty
+	});
+
+	complete.on('$2', function(lvl1) {
+		try {
+			this.reply(Object.keys(autocomplete[lvl1]));
+		} catch (e) {} // eslint-disable-line no-empty
+	});
+
+	complete.on('$3', function(lvl2, line) {
+		const [, lvl1] = line.split(' ');
+		try {
+			this.reply(Object.keys(autocomplete[lvl1][lvl2]));
+		} catch (e) {} // eslint-disable-line no-empty
+	});
+
+	complete.on('$4', function(lvl3, line) {
+		const [, lvl1, lvl2] = line.split(' ');
+		try {
+			this.reply(Object.keys(autocomplete[lvl1][lvl2][lvl3]));
+		} catch (e) {} // eslint-disable-line no-empty
+	});
+
+	complete.init();
+};
 
 
 
@@ -74,7 +142,7 @@ module.exports = class Cli {
 	//-- Set tasks
 	static setUsageTasks(commands) {
 		STATIC.commands = commands;
-
+		initAutocomplete();
 	}
 
 
