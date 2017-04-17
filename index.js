@@ -41,7 +41,10 @@ const cmdDetails = (cmd) => {
 	const [task, subtask] = cmd.split(' ');
 	const [call, desc]    = subtask ? STATIC.commands[task][subtask] : STATIC.commands[task];
 
-	return { call, desc };
+	return {
+		call: subtask ? `${task} ${call}` : call,
+		desc: desc
+	};
 };
 
 
@@ -209,7 +212,7 @@ module.exports = class Cli {
 			})();
 
 			Object.values(STATIC.commands[task]).forEach((subtask) => {
-				usage += `${chalk.yellow(`${pkg.name} ${task}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
+				usage += `${chalk.yellow(`${pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 			});
 		} else {
 			usage += `${chalk.yellow(pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
@@ -238,6 +241,13 @@ module.exports = class Cli {
 		return args.join(' ');
 	}
 
+	//-- Refuse arguments
+	static refuseArguments(meowCli) {
+		if (meowCli.input.length > 1) {
+			this.showTaskUsage(meowCli);
+		}
+	}
+
 	//-- Refuse flags
 	static refuseFlags(meowCli) {
 		if (Object.keys(meowCli.flags).length) {
@@ -250,6 +260,18 @@ module.exports = class Cli {
 		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length) {
 			this.showTaskUsage(meowCli);
 		}
+	}
+
+	//-- Accept only this flag
+	static acceptOnlyFlag(meowCli, flag) {
+		if (Object.keys(meowCli.flags).length === 1 && meowCli.flags[flag]) {
+			return meowCli.flags[flag];
+
+		} else if (Object.keys(meowCli.flags).length !== 0) {
+			this.showTaskUsage(meowCli);
+		}
+
+		return false;
 	}
 
 
