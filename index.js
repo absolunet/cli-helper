@@ -3,8 +3,6 @@
 //--------------------------------------------------------
 'use strict';
 
-const echo = console.log; // eslint-disable-line no-console
-
 const os           = require('os');
 const path         = require('path');
 const glob         = require('glob');
@@ -14,6 +12,7 @@ const chalk        = require('chalk');
 const indentString = require('indent-string');
 const stringWidth  = require('string-width');
 const pad          = require('@absolunet/terminal-pad');
+const terminal     = require('@absolunet/terminal');
 
 delete require.cache[__filename];
 const pkgPath = path.dirname(module.parent.filename);
@@ -224,8 +223,8 @@ module.exports = class Cli {
 
 	//-- Show task usage and die
 	static showTaskUsage(meowCli) {
-		echo(`\n${this.getTaskUsage(meowCli.input[0])}`);
-		process.exit(2); // eslint-disable-line no-process-exit
+		terminal.echo(`\n${this.getTaskUsage(meowCli.input[0])}`);
+		terminal.exit();
 	}
 
 
