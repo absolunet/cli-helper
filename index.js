@@ -284,8 +284,8 @@ module.exports = class Cli {
 
 		const tasks = [];
 
-		glob.sync(`${STATIC.tasks.path}/!(default).js`).forEach((task) => {
-			tasks.push(task.split(STATIC.tasks.path).slice(-1).pop().substring(1).slice(0, -3));
+		glob.sync(`${STATIC.tasks.path}/**/!(default).js`).forEach((task) => {
+			tasks.push(task.split(STATIC.tasks.path).slice(-1).pop().substring(1).slice(0, -3).replace(/\//g, ':'));
 		});
 
 		STATIC.tasks.list = tasks;
@@ -298,7 +298,7 @@ module.exports = class Cli {
 
 		if (task) {
 			if (STATIC.tasks.list.includes(task)) {
-				require(`${STATIC.tasks.path}/${task}`)(meowCli);  // eslint-disable-line global-require
+				require(`${STATIC.tasks.path}/${task.replace(/:/g, '/')}`)(meowCli);  // eslint-disable-line global-require
 			} else {
 				meowCli.showHelp();
 			}
