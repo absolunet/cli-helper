@@ -298,12 +298,12 @@ module.exports = class Cli {
 
 		if (task) {
 			if (STATIC.tasks.list.includes(task)) {
-				require(`${STATIC.tasks.path}/${task.replace(/:/g, '/')}`)(meowCli);  // eslint-disable-line global-require
+				require(`${STATIC.tasks.path}/${task.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
 			} else {
 				meowCli.showHelp();
 			}
 		} else {
-			require(`${STATIC.tasks.path}/default`)(meowCli);  // eslint-disable-line global-require
+			require(`${STATIC.tasks.path}/default`).cli(meowCli);  // eslint-disable-line global-require
 		}
 	}
 
