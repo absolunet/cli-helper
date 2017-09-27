@@ -7,5 +7,309 @@
 
 > CLI utilities
 
-## License 
-See the [license](https://github.com/absolunet/node-cli/blob/master/license).
+Built around [meow](https://www.npmjs.com/package/meow)
+
+
+## Install
+
+```sh
+$ npm install @absolunet/cli
+```
+
+
+## Usage
+
+```js
+const cli = require('@absolunet/cli');
+
+cli.initTasksList('./tasks');
+
+cli.setUsageTasks({
+
+	// Base
+	'start': ['start', 'Start project'],
+	'stop':  ['stop',  'Stop project'],
+	'log':   [`log ${cli.optionalPlaceholder('<sub>')}`, 'Show log for sub', ['sub1', 'sub2']],
+
+	// Options
+	'--help':    ['-h, --help',    'Show help'],
+	'--version': ['-v, --version', 'Show version']
+
+});
+
+cli.setFullUsage({
+	'Base':    ['start', 'stop', 'log'],
+	'Options': ['--help', '--version']
+});
+
+console.log(cli.fullUsage);
+```
+
+```
+  Test project description
+
+  Usage: testprj <command>
+
+  Base
+  start             Start project
+  stop              Stop project
+  log [<sub>]       Show log for sub [sub1|sub2]
+
+  Options
+  -h, --help        Show help
+  -v, --version     Show version
+
+  testprj@1.2.3 /usr/local/bin/testprj
+```
+
+
+<br>
+<br>
+
+## API - Tasks
+
+### `initTasksList(tasksPath)`
+Build tasks list from js filenames
+
+#### tasksPath
+*Required*<br>
+Type: `string`<br>
+Path to tasks folder
+
+
+
+
+<br>
+
+### `tasksRouter(meowCli)`
+Require task file specified by CLI
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+
+
+
+<br>
+
+### `tasks`
+Type: `Array`<br>
+List of tasks
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+## API - Usage
+
+### `placeholder(name)`
+Look placeholder<br>
+Return `string` of looked placeholder
+
+#### name
+*Required*<br>
+Type: `string`<br>
+Text to theme
+
+
+
+
+<br>
+
+### `optional(name)`
+Look optional<br>
+Return `string` of looked optional
+
+#### name
+*Required*<br>
+Type: `string`<br>
+Text to theme
+
+
+
+
+<br>
+
+### `optionalPlaceholder(name)`
+Look optional placeholder<br>
+Return `string` of looked optional placeholder
+
+#### name
+*Required*<br>
+Type: `string`<br>
+Text to theme
+
+
+
+
+<br>
+
+### `setUsageTasks(commands)`
+Set tasks usage and autocomplete data
+
+#### commands
+*Required*<br>
+Type: `object`<br>
+Check example for structure
+
+
+
+
+<br>
+
+### `setFullUsage(fullUsage)`
+Set full usage structure
+
+#### fullUsage
+*Required*<br>
+Type: `object`<br>
+Check example for structure
+
+
+
+
+<br>
+
+### `getTaskUsage(task)`
+Get task usage<br>
+Return `string` of task usage
+
+#### task
+*Required*<br>
+Type: `string`<br>
+Check example for structure
+
+
+
+
+<br>
+
+### `showTaskUsage(meowCli)`
+Display task usage and quit
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+
+
+
+<br>
+
+### `fullUsage`
+Type: `string`<br>
+Description and tasks formatted as a user manual
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+## API - Helpers
+
+### `refuseArguments(meowCli)`
+Show task usage and quit if CLI call has arguments
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+
+
+
+<br>
+
+### `refuseFlags(meowCli)`
+Show task usage and quit if CLI call has flags
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+
+
+
+<br>
+
+### `refuseFlagsAndArguments(meowCli)`
+Show task usage and quit if CLI call has arguments or flags
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+
+
+
+<br>
+
+### `acceptOnlyFlag(meowCli, flag)`
+Show task usage and quit if CLI call has flags that are not whitelisted
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+#### flag
+*Required*<br>
+Type: `string`<br>
+Whitelisted flag
+
+
+
+
+<br>
+
+### `isRoot()`
+Check if CLI is run by root user<br>
+Return `boolean`
+
+
+
+
+<br>
+
+### `binName`
+Type: `string`<br>
+Binary name
+
+
+
+
+<br>
+
+### `rawArguments`
+Type: `string`<br>
+Space separated arguments from terminal
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+## License
+
+MIT © [Absolunet](https://absolunet.com)

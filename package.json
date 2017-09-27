@@ -1,32 +1,37 @@
 {
-  "name":        "@absolunet/cli",
-  "version":     "0.4.0",
+  "name": "@absolunet/cli",
+  "version": "0.4.1",
   "description": "CLI utilities",
-  "definition":  "",
-  "homepage":    "https://github.com/absolunet/node-cli",
-  "author":      { "name": "Absolunet", "url": "http://absolunet.com/" },
-
-  "license":    "MIT",
-  "repository": { "url":   "git://github.com/absolunet/node-cli.git", "type":"git" },
-  "bugs":       { "url": "https://github.com/absolunet/node-cli/issues" },
-
-  "engines": { "node": ">= 7.10.0" },
-  "scripts": {
-    "test": "mocha"
+  "definition": "",
+  "homepage": "https://github.com/absolunet/node-cli",
+  "author": {
+    "name": "Absolunet",
+    "url": "http://absolunet.com/"
   },
-
+  "license": "MIT",
+  "repository": {
+    "url": "git://github.com/absolunet/node-cli.git",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/absolunet/node-cli/issues"
+  },
+  "engines": {
+    "node": ">= 8.6.0"
+  },
+  "scripts": {
+    "test": "ava test"
+  },
   "devDependencies": {
-    "@absolunet/tester": "0.0.5"
- },
-
+    "@absolunet/tester": "1.1.0"
+  },
   "dependencies": {
-    "chalk":         "^1.1.3",
-    "glob":          "^7.1.2",
-    "indent-string": "^3.1.0",
-    "omelette":      "^0.3.2",
-    "read-pkg-up":   "^2.0.0",
-    "string-width":  "^2.0.0",
-
-    "@absolunet/terminal-pad": "^0.0.1"
+    "@absolunet/terminal-pad": "^0.0.2",
+    "chalk": "^2.1.0",
+    "glob": "^7.1.2",
+    "indent-string": "^3.2.0",
+    "omelette": "^0.3.2",
+    "read-pkg-up": "^2.0.0",
+    "string-width": "^2.1.1"
   }
 }
