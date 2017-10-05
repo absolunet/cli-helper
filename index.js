@@ -92,35 +92,8 @@ const initAutocomplete = () => {
 	});
 
 
-	// Breks eggs
-	const complete = omelette(pkg.name);
-
-	complete.on('$1', function() {
-		try {
-			this.reply(Object.keys(autocomplete));
-		} catch (e) {} // eslint-disable-line no-empty
-	});
-
-	complete.on('$2', function(lvl1) {
-		try {
-			this.reply(Object.keys(autocomplete[lvl1]));
-		} catch (e) {} // eslint-disable-line no-empty
-	});
-
-	complete.on('$3', function(lvl2, line) {
-		const [, lvl1] = line.split(' ');
-		try {
-			this.reply(Object.keys(autocomplete[lvl1][lvl2]));
-		} catch (e) {} // eslint-disable-line no-empty
-	});
-
-	complete.on('$4', function(lvl3, line) {
-		const [, lvl1, lvl2] = line.split(' ');
-		try {
-			this.reply(Object.keys(autocomplete[lvl1][lvl2][lvl3]));
-		} catch (e) {} // eslint-disable-line no-empty
-	});
-
+	// Breaks eggs
+	const complete = omelette(pkg.name).tree(autocomplete);
 	complete.init();
 };
 
