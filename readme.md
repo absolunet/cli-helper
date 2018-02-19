@@ -66,6 +66,21 @@ console.log(cli.fullUsage);
 <br>
 <br>
 
+### `init([options])`
+Build tasks list from js filenames
+
+#### options.pkgPath
+Type: `string`<br>
+Path to `package.json` folder
+
+#### options.pkg
+Type: `object`<br>
+`package.json`-like object
+
+
+<br>
+
+
 ## API - Tasks
 
 ### `initTasksList(tasksPath)`
@@ -165,7 +180,7 @@ Check example for structure
 
 <br>
 
-### `setFullUsage(fullUsage)`
+### `setFullUsage(fullUsage [, options])`
 Set full usage structure
 
 #### fullUsage
@@ -173,7 +188,10 @@ Set full usage structure
 Type: `object`<br>
 Check example for structure
 
-
+#### options.showBin
+Type: `boolean`<br>
+Show version and bin location<br>
+*Default: true*
 
 
 <br>

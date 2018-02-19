@@ -14,10 +14,6 @@ const stringWidth  = require('string-width');
 const pad          = require('@absolunet/terminal-pad');
 const terminal     = require('@absolunet/terminal');
 
-delete require.cache[__filename];
-const pkgPath = path.dirname(module.parent.filename);
-const { pkg } = readPkgUp.sync({ cwd:pkgPath });
-
 
 
 
@@ -25,8 +21,11 @@ const { pkg } = readPkgUp.sync({ cwd:pkgPath });
 
 //-- Static properties
 const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.___AbsolunetCli___ = {
+	pkgPath:   '',
+	pkg:       {},
 	commands:  {},
 	fullUsage: {},
+	showBin:   true,
 	tasks:     {
 		path: '',
 		list: []
@@ -93,7 +92,7 @@ const initAutocomplete = () => {
 
 
 	// Breaks eggs
-	const complete = omelette(pkg.name).tree(autocomplete);
+	const complete = omelette(STATIC.pkg.name).tree(autocomplete);
 	complete.init();
 };
 
@@ -118,6 +117,15 @@ module.exports = class Cli {
 
 
 	//-- Set tasks
+	static init({ pkgPath, pkg }) {
+		delete require.cache[__filename];
+
+		STATIC.pkgPath = pkgPath || path.dirname(module.parent.filename);
+		STATIC.pkg     = pkg     || readPkgUp.sync({ cwd:STATIC.pkgPath }).pkg;
+	}
+
+
+	//-- Set tasks
 	static setUsageTasks(commands) {
 		STATIC.commands = commands;
 		initAutocomplete();
@@ -126,13 +134,14 @@ module.exports = class Cli {
 
 	//-- Get binary name
 	static get binName() {
-		return pkg.name;
+		return STATIC.pkg.name;
 	}
 
 
 	//-- Set full usage
-	static setFullUsage(fullUsage) {
+	static setFullUsage(fullUsage, { showBin = true } = {}) {
 		STATIC.fullUsage = fullUsage;
+		STATIC.showBin   = showBin;
 	}
 
 
@@ -150,7 +159,7 @@ module.exports = class Cli {
 			return Math.max(...lengths);
 		})();
 
-		let usage = `Usage: ${chalk.yellow(pkg.name)} ${chalk.cyan('<command>')}\n`;
+		let usage = `Usage: ${chalk.yellow(STATIC.pkg.name)} ${chalk.cyan('<command>')}\n`;
 
 		Object.keys(STATIC.fullUsage).forEach((group) => {
 			usage += `\n${chalk.underline(group)}\n`;
@@ -160,7 +169,9 @@ module.exports = class Cli {
 			});
 		});
 
-		usage += `\n${pkg.name}@${pkg.version} ${pkgPath}`;
+		if (STATIC.showBin) {
+			usage += `\n${STATIC.pkg.name}@${STATIC.pkg.version} ${STATIC.pkgPath}`;
+		}
 
 		return usage;
 	}
@@ -184,10 +195,10 @@ module.exports = class Cli {
 			})();
 
 			Object.values(STATIC.commands[task]).forEach((subtask) => {
-				usage += `${chalk.yellow(`${pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
+				usage += `${chalk.yellow(`${STATIC.pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 			});
 		} else {
-			usage += `${chalk.yellow(pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
+			usage += `${chalk.yellow(STATIC.pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
 		}
 
 		return indentString(usage, 2);
