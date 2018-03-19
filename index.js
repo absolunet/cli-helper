@@ -117,7 +117,7 @@ module.exports = class Cli {
 
 
 	//-- Set tasks
-	static init({ pkgPath, pkg }) {
+	static init({ pkgPath, pkg } = {}) {
 		delete require.cache[__filename];
 
 		STATIC.pkgPath = pkgPath || path.dirname(module.parent.filename);
