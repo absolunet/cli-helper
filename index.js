@@ -278,13 +278,68 @@ module.exports = class Cli {
 
 	//-- Route to good task
 	static tasksRouter(meowCli) {
-		const [task] = meowCli.input;
+		const [originalTask] = meowCli.input;
+		let [task] = meowCli.input;
 
 		if (task) {
+			let existingTask = null;
+			let list;
+
 			if (STATIC.tasks.list.includes(task)) {
-				require(`${STATIC.tasks.path}/${task.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
+				existingTask = task;
 			} else {
+				if (task.indexOf(' ') > -1) {
+					task = task.substring(0, task.indexOf(' '));
+				}
+
+				task = task.split(':');
+
+				if (task.length < 2) { // If the task don't have a scope
+					list = STATIC.tasks.list.filter((item) => {
+						return item.indexOf(':') < 0 && item.indexOf(task) === 0;
+					});
+				} else { // If the task has a scope
+					let scopes = [];
+					list = STATIC.tasks.list.filter((item) => {
+						return item.indexOf(':') > -1;
+					}).map((item) => {
+						return item.split(':');
+					});
+
+					for (let i = 0; i < task.length && scopes.length < 2; i++) {
+						list = list.filter((item) => {
+							return item[i].indexOf(task[i]) === 0;
+						});
+
+						scopes = list.reduce((previousValue, currentValue) => {
+							if (previousValue.indexOf(currentValue[i]) < 0) {
+								previousValue.push(currentValue[i]);
+							}
+
+							return previousValue;
+						}, []);
+					}
+
+					list = list.map((item) => {
+						return item.join(':');
+					});
+				}
+
+				if (typeof list !== 'undefined' && list.length === 1) {
+					[existingTask] = list;
+				}
+			}
+
+			if (existingTask !== null) {
+				if (existingTask !== originalTask) {
+					terminal.echo(`Executing task ${existingTask}\n`);
+				}
+
+				require(`${STATIC.tasks.path}/${existingTask.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
+			} else if (typeof list === 'undefined' || list.length < 1) {
 				meowCli.showHelp();
+			} else {
+				terminal.echo(`Command ${originalTask} is ambiguous:\n\n${list.join(`\n`)}`);
 			}
 		} else {
 			require(`${STATIC.tasks.path}/default`).cli(meowCli);  // eslint-disable-line global-require
