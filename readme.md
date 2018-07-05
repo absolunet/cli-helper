@@ -1,9 +1,10 @@
 # @absolunet/cli
 
-[![NPM version](https://img.shields.io/npm/v/@absolunet/cli.svg)](https://www.npmjs.com/package/@absolunet/cli)
-[![Travis build](https://api.travis-ci.org/absolunet/node-cli.svg?branch=master)](https://travis-ci.org/absolunet/node-cli/builds)
-[![Dependencies](https://david-dm.org/absolunet/node-cli/status.svg)](https://david-dm.org/absolunet/node-cli)
-[![Dev dependencies](https://david-dm.org/absolunet/node-cli/dev-status.svg)](https://david-dm.org/absolunet/node-cli?type=dev)
+[![npm](https://img.shields.io/npm/v/@absolunet/cli.svg)](https://www.npmjs.com/package/@absolunet/cli)
+[![npm dependencies](https://david-dm.org/absolunet/node-cli/status.svg)](https://david-dm.org/absolunet/node-cli)
+[![npms](https://badges.npms.io/%40absolunet%2Fcli.svg)](https://npms.io/search?q=%40absolunet%2Fcli)
+[![Travis CI](https://api.travis-ci.org/absolunet/node-cli.svg?branch=master)](https://travis-ci.org/absolunet/node-cli/builds)
+[![Code style ESLint](https://img.shields.io/badge/code_style-@absolunet/node-659d32.svg)](https://github.com/absolunet/eslint-config-node)
 
 > CLI utilities
 
@@ -280,6 +281,7 @@ meow object
 
 ### `acceptOnlyFlag(meowCli, flag)`
 Show task usage and quit if CLI call has flags that are not whitelisted
+Return flag value
 
 #### meowCli
 *Required*<br>
@@ -290,6 +292,25 @@ meow object
 *Required*<br>
 Type: `string`<br>
 Whitelisted flag
+
+
+
+
+<br>
+
+### `acceptOnlyFlags(meowCli, flag)`
+Show task usage and quit if CLI call has flags that are not whitelisted
+Return `object` of flags values
+
+#### meowCli
+*Required*<br>
+Type: `object`<br>
+meow object
+
+#### refuseFlagsAndArguments
+*Required*<br>
+Type: `array` of `string`<br>
+Whitelisted flags
 
 
 

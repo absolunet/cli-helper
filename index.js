@@ -246,9 +246,30 @@ module.exports = class Cli {
 	}
 
 	//-- Accept only this flag
-	static acceptOnlyFlag(meowCli, flag) {
-		if (Object.keys(meowCli.flags).length === 1 && meowCli.flags[flag]) {
-			return meowCli.flags[flag];
+	static acceptOnlyFlag(meowCli, allowedFlag) {
+		const result = this.acceptOnlyFlags(meowCli, [allowedFlag]);
+
+		if (typeof result === 'object') {
+			return result[allowedFlag] || false;
+		}
+
+		return result;
+	}
+
+	//-- Accept only these flags
+	static acceptOnlyFlags(meowCli, allowedFlags) {
+		const inputFlags = Object.keys(meowCli.flags);
+
+		if (inputFlags.length <= allowedFlags.length) {
+			const areFlagsValid = inputFlags.every((flag) => {
+				return allowedFlags.includes(flag);
+			});
+
+			if (areFlagsValid) {
+				return meowCli.flags;
+			}
+
+			this.showTaskUsage(meowCli);
 
 		} else if (Object.keys(meowCli.flags).length !== 0) {
 			this.showTaskUsage(meowCli);

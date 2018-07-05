@@ -1,12 +1,12 @@
 {
   "name": "@absolunet/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "CLI utilities",
   "definition": "",
   "homepage": "https://github.com/absolunet/node-cli",
   "author": {
     "name": "Absolunet",
-    "url": "http://absolunet.com/"
+    "url": "https://absolunet.com"
   },
   "license": "MIT",
   "repository": {
@@ -17,22 +17,22 @@
     "url": "https://github.com/absolunet/node-cli/issues"
   },
   "engines": {
-    "node": ">= 9.8.0"
+    "node": ">= 10.5.0"
   },
   "scripts": {
     "test": "ava test"
   },
   "devDependencies": {
-    "@absolunet/tester": "1.4.0"
+    "@absolunet/tester": "1.7.1"
   },
   "dependencies": {
-    "@absolunet/terminal": "^0.4.4",
+    "@absolunet/terminal": "^0.5.0",
     "@absolunet/terminal-pad": "^0.0.2",
-    "chalk": "^2.3.2",
+    "chalk": "^2.4.1",
     "glob": "^7.1.2",
     "indent-string": "^3.2.0",
-    "omelette": "^0.4.5",
-    "read-pkg-up": "^3.0.0",
+    "omelette": "^0.4.11",
+    "read-pkg-up": "^4.0.0",
     "string-width": "^2.1.1"
   }
 }
