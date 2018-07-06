@@ -279,27 +279,8 @@ meow object
 
 <br>
 
-### `acceptOnlyFlag(meowCli, flag)`
-Show task usage and quit if CLI call has flags that are not whitelisted
-Return flag value
-
-#### meowCli
-*Required*<br>
-Type: `object`<br>
-meow object
-
-#### flag
-*Required*<br>
-Type: `string`<br>
-Whitelisted flag
-
-
-
-
-<br>
-
-### `acceptOnlyFlags(meowCli, flag)`
-Show task usage and quit if CLI call has flags that are not whitelisted
+### `validateFlags(meowCli, flag)`
+Show task usage and quit if CLI call has flags that are not whitelisted and do not validate<br>
 Return `object` of flags values
 
 #### meowCli
@@ -307,10 +288,10 @@ Return `object` of flags values
 Type: `object`<br>
 meow object
 
-#### refuseFlagsAndArguments
+#### flagValidations
 *Required*<br>
-Type: `array` of `string`<br>
-Whitelisted flags
+Type: `object` of flag validators<br>
+Whitelisted flags and their `ow` [predicate](https://github.com/sindresorhus/ow/#api)
 
 
 

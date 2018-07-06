@@ -3,16 +3,17 @@
 //--------------------------------------------------------
 'use strict';
 
-const os           = require('os');
-const path         = require('path');
-const glob         = require('glob');
-const readPkgUp    = require('read-pkg-up');
-const omelette     = require('omelette');
 const chalk        = require('chalk');
+const glob         = require('glob');
 const indentString = require('indent-string');
+const omelette     = require('omelette');
+const os           = require('os');
+const ow           = require('ow');
+const path         = require('path');
+const readPkgUp    = require('read-pkg-up');
 const stringWidth  = require('string-width');
-const pad          = require('@absolunet/terminal-pad');
 const terminal     = require('@absolunet/terminal');
+const pad          = require('@absolunet/terminal-pad');
 
 
 
@@ -179,29 +180,33 @@ module.exports = class Cli {
 
 	//-- Get task usage
 	static getTaskUsage(task) {
-		const subs = !Array.isArray(STATIC.commands[task]);
+		if (task) {
+			const subs = !Array.isArray(STATIC.commands[task]);
 
-		let usage = `${chalk.underline('Usage:')}\n`;
-		if (subs) {
+			let usage = `${chalk.underline('Usage:')}\n`;
+			if (subs) {
 
-			const length = (() => {
-				const lengths = [];
+				const length = (() => {
+					const lengths = [];
+					Object.values(STATIC.commands[task]).forEach((subtask) => {
+						const { call } = cmdDetails(`${task} ${subtask[0]}`);
+						lengths.push(stringWidth(call));
+					});
+
+					return Math.max(...lengths);
+				})();
+
 				Object.values(STATIC.commands[task]).forEach((subtask) => {
-					const { call } = cmdDetails(`${task} ${subtask[0]}`);
-					lengths.push(stringWidth(call));
+					usage += `${chalk.yellow(`${STATIC.pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 				});
+			} else {
+				usage += `${chalk.yellow(STATIC.pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
+			}
 
-				return Math.max(...lengths);
-			})();
-
-			Object.values(STATIC.commands[task]).forEach((subtask) => {
-				usage += `${chalk.yellow(`${STATIC.pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
-			});
-		} else {
-			usage += `${chalk.yellow(STATIC.pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
+			return indentString(usage, 2);
 		}
 
-		return indentString(usage, 2);
+		return this.fullUsage;
 	}
 
 
@@ -245,37 +250,27 @@ module.exports = class Cli {
 		}
 	}
 
-	//-- Accept only this flag
-	static acceptOnlyFlag(meowCli, allowedFlag) {
-		const result = this.acceptOnlyFlags(meowCli, [allowedFlag]);
-
-		if (typeof result === 'object') {
-			return result[allowedFlag] || false;
-		}
-
-		return result;
-	}
-
 	//-- Accept only these flags
-	static acceptOnlyFlags(meowCli, allowedFlags) {
-		const inputFlags = Object.keys(meowCli.flags);
+	static validateFlags(meowCli, flagValidations) {
+		const inputFlags   = Object.keys(meowCli.flags);
+		const allowedFlags = Object.keys(flagValidations);
 
-		if (inputFlags.length <= allowedFlags.length) {
+		if (inputFlags.length === 0) {
+			return {};
+
+		} else if (inputFlags.length <= allowedFlags.length) {
 			const areFlagsValid = inputFlags.every((flag) => {
-				return allowedFlags.includes(flag);
+				return allowedFlags.includes(flag) && ow.isValid(meowCli.flags[flag], flagValidations[flag]);
 			});
 
 			if (areFlagsValid) {
 				return meowCli.flags;
 			}
 
-			this.showTaskUsage(meowCli);
-
-		} else if (Object.keys(meowCli.flags).length !== 0) {
-			this.showTaskUsage(meowCli);
+			return this.showTaskUsage(meowCli);
 		}
 
-		return false;
+		return this.showTaskUsage(meowCli);
 	}
 
 
