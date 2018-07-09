@@ -35,6 +35,10 @@ const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.__
 
 
 
+const owIsMeow = ow.create(ow.object.nonEmpty.hasKeys('input', 'flags', 'pkg', 'help').label('meowCli'));
+
+
+
 //-- Command details
 const cmdDetails = (cmd) => {
 	const [task, subtask] = cmd.split(' ');
@@ -109,16 +113,23 @@ module.exports = class Cli {
 	}
 
 	static optional(name) {
+		ow(name, ow.string.nonEmpty);
+
 		return `${chalk.reset('[')}${chalk.yellow(name)}${chalk.reset(']')}`;
 	}
 
 	static optionalPlaceholder(name) {
+		ow(name, ow.string.nonEmpty);
+
 		return `${chalk.reset('[')}${this.placeholder(name)}${chalk.reset(']')}`;
 	}
 
 
 	//-- Set tasks
 	static init({ pkgPath, pkg } = {}) {
+		ow(pkgPath, ow.any(ow.undefined, ow.string.nonEmpty));
+		ow(pkg, ow.any(ow.undefined, ow.object.nonEmpty));
+
 		delete require.cache[__filename];
 
 		STATIC.pkgPath = pkgPath || path.dirname(module.parent.filename);
@@ -128,6 +139,8 @@ module.exports = class Cli {
 
 	//-- Set tasks
 	static setUsageTasks(commands) {
+		ow(commands, ow.object.nonEmpty);
+
 		STATIC.commands = commands;
 		initAutocomplete();
 	}
@@ -141,6 +154,9 @@ module.exports = class Cli {
 
 	//-- Set full usage
 	static setFullUsage(fullUsage, { showBin = true } = {}) {
+		ow(fullUsage, ow.object.nonEmpty);
+		ow(showBin, ow.boolean);
+
 		STATIC.fullUsage = fullUsage;
 		STATIC.showBin   = showBin;
 	}
@@ -180,6 +196,8 @@ module.exports = class Cli {
 
 	//-- Get task usage
 	static getTaskUsage(task) {
+		ow(task, ow.any(ow.undefined, ow.string.nonEmpty));
+
 		if (task) {
 			const subs = !Array.isArray(STATIC.commands[task]);
 
@@ -212,6 +230,8 @@ module.exports = class Cli {
 
 	//-- Show task usage and die
 	static showTaskUsage(meowCli) {
+		owIsMeow(meowCli);
+
 		terminal.echo(`\n${this.getTaskUsage(meowCli.input[0])}`);
 		terminal.exit();
 	}
@@ -231,6 +251,8 @@ module.exports = class Cli {
 
 	//-- Refuse arguments
 	static refuseArguments(meowCli) {
+		owIsMeow(meowCli);
+
 		if (meowCli.input.length > 1) {
 			this.showTaskUsage(meowCli);
 		}
@@ -238,6 +260,8 @@ module.exports = class Cli {
 
 	//-- Refuse flags
 	static refuseFlags(meowCli) {
+		owIsMeow(meowCli);
+
 		if (Object.keys(meowCli.flags).length) {
 			this.showTaskUsage(meowCli);
 		}
@@ -245,6 +269,8 @@ module.exports = class Cli {
 
 	//-- Refuse flags & arguments
 	static refuseFlagsAndArguments(meowCli) {
+		owIsMeow(meowCli);
+
 		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length) {
 			this.showTaskUsage(meowCli);
 		}
@@ -252,6 +278,9 @@ module.exports = class Cli {
 
 	//-- Accept only these flags
 	static validateFlags(meowCli, flagValidations) {
+		owIsMeow(meowCli);
+		ow(flagValidations, ow.object.nonEmpty);
+
 		const inputFlags   = Object.keys(meowCli.flags);
 		const allowedFlags = Object.keys(flagValidations);
 
@@ -280,6 +309,8 @@ module.exports = class Cli {
 
 	//-- List tasks files
 	static initTasksList(tasksPath) {
+		ow(tasksPath, ow.string.nonEmpty);
+
 		STATIC.tasks.path = tasksPath;
 
 		const tasks = [];
@@ -294,6 +325,8 @@ module.exports = class Cli {
 
 	//-- Route to good task
 	static tasksRouter(meowCli) {
+		owIsMeow(meowCli);
+
 		const [task] = meowCli.input;
 
 		if (task) {
