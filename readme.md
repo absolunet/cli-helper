@@ -47,20 +47,20 @@ console.log(cli.fullUsage);
 ```
 
 ```
-  Test project description
+	Test project description
 
-  Usage: testprj <command>
+	Usage: testprj <command>
 
-  Base
-  start             Start project
-  stop              Stop project
-  log [<sub>]       Show log for sub [sub1|sub2]
+	Base
+	start             Start project
+	stop              Stop project
+	log [<sub>]       Show log for sub [sub1|sub2]
 
-  Options
-  -h, --help        Show help
-  -v, --version     Show version
+	Options
+	-h, --help        Show help
+	-v, --version     Show version
 
-  testprj@1.2.3 /usr/local/bin/testprj
+	testprj@1.2.3 /usr/local/bin/testprj
 ```
 
 

@@ -8,6 +8,9 @@
     "name": "Absolunet",
     "url": "https://absolunet.com"
   },
+  "keywords": [
+    "cli"
+  ],
   "license": "MIT",
   "repository": {
     "url": "git://github.com/absolunet/node-cli.git",
@@ -17,13 +20,14 @@
     "url": "https://github.com/absolunet/node-cli/issues"
   },
   "engines": {
-    "node": ">= 10.5.0"
+    "node": ">= 10.7.0"
   },
+  "main": "index.js",
   "scripts": {
-    "test": "ava test"
+    "test": "ava"
   },
   "devDependencies": {
-    "@absolunet/tester": "1.7.1"
+    "@absolunet/tester": "2.0.3"
   },
   "dependencies": {
     "@absolunet/terminal": "^0.5.0",

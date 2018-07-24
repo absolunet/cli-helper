@@ -262,7 +262,7 @@ module.exports = class Cli {
 	static refuseFlags(meowCli) {
 		owIsMeow(meowCli);
 
-		if (Object.keys(meowCli.flags).length) {
+		if (Object.keys(meowCli.flags).length !== 0) {
 			this.showTaskUsage(meowCli);
 		}
 	}
@@ -271,7 +271,7 @@ module.exports = class Cli {
 	static refuseFlagsAndArguments(meowCli) {
 		owIsMeow(meowCli);
 
-		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length) {
+		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length !== 0) {
 			this.showTaskUsage(meowCli);
 		}
 	}
