@@ -134,7 +134,7 @@ module.exports = class Cli {
 
 	//-- Get binary name
 	static get binName() {
-		return STATIC.pkg.name;
+		return Object.keys(STATIC.pkg.bin)[0];
 	}
 
 
@@ -159,7 +159,7 @@ module.exports = class Cli {
 			return Math.max(...lengths);
 		})();
 
-		let usage = `Usage: ${chalk.yellow(STATIC.pkg.name)} ${chalk.cyan('<command>')}\n`;
+		let usage = `Usage: ${chalk.yellow(this.binName)} ${chalk.cyan('<command>')}\n`;
 
 		Object.keys(STATIC.fullUsage).forEach((group) => {
 			usage += `\n${chalk.underline(group)}\n`;
@@ -170,7 +170,7 @@ module.exports = class Cli {
 		});
 
 		if (STATIC.showBin) {
-			usage += `\n${STATIC.pkg.name}@${STATIC.pkg.version} ${STATIC.pkgPath}`;
+			usage += `\n${this.binName}@${STATIC.pkg.version} ${STATIC.pkgPath}`;
 		}
 
 		return usage;
@@ -195,10 +195,10 @@ module.exports = class Cli {
 			})();
 
 			Object.values(STATIC.commands[task]).forEach((subtask) => {
-				usage += `${chalk.yellow(`${STATIC.pkg.name}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
+				usage += `${chalk.yellow(`${this.binName}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 			});
 		} else {
-			usage += `${chalk.yellow(STATIC.pkg.name)} ${cmdUsage(task, 0, 2)}\n`;
+			usage += `${chalk.yellow(this.binName)} ${cmdUsage(task, 0, 2)}\n`;
 		}
 
 		return indentString(usage, 2);
