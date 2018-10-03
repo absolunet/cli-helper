@@ -16,12 +16,8 @@ const terminal     = require('@absolunet/terminal');
 const pad          = require('@absolunet/terminal-pad');
 
 
-
-
-
-
 //-- Static properties
-const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.___AbsolunetCli___ = {
+const __ = {
 	pkgPath:   '',
 	pkg:       {},
 	commands:  {},
@@ -34,15 +30,13 @@ const STATIC = global.___AbsolunetCli___ ? global.___AbsolunetCli___ : global.__
 };
 
 
-
 const owIsMeow = ow.create(ow.object.nonEmpty.hasKeys('input', 'flags', 'pkg', 'help').label('meowCli'));
-
 
 
 //-- Command details
 const cmdDetails = (cmd) => {
 	const [task, subtask] = cmd.split(' ');
-	const [call, desc]    = subtask ? STATIC.commands[task][subtask] : STATIC.commands[task];
+	const [call, desc]    = subtask ? __.commands[task][subtask] : __.commands[task];
 
 	return {
 		call: subtask ? `${task} ${call}` : call,
@@ -79,8 +73,8 @@ const initAutocomplete = () => {
 
 	// Build autocomplete tree
 	const autocomplete = {};
-	Object.keys(STATIC.commands).forEach((task) => {
-		const treeTask = STATIC.commands[task];
+	Object.keys(__.commands).forEach((task) => {
+		const treeTask = __.commands[task];
 		autocomplete[task] = {};
 
 		if (!Array.isArray(treeTask)) {
@@ -97,7 +91,7 @@ const initAutocomplete = () => {
 
 
 	// Breaks eggs
-	const complete = omelette(STATIC.pkg.name).tree(autocomplete);
+	const complete = omelette(__.pkg.name).tree(autocomplete);
 	complete.init();
 };
 
@@ -105,20 +99,27 @@ const initAutocomplete = () => {
 
 
 
-module.exports = class Cli {
+
+class Cli {
+
+	//-- Local ow
+	get ow() {
+		return ow;
+	}
+
 
 	//-- User helpers
-	static get placeholder() {
+	get placeholder() {
 		return chalk.green;
 	}
 
-	static optional(name) {
+	optional(name) {
 		ow(name, ow.string.nonEmpty);
 
 		return `${chalk.reset('[')}${chalk.yellow(name)}${chalk.reset(']')}`;
 	}
 
-	static optionalPlaceholder(name) {
+	optionalPlaceholder(name) {
 		ow(name, ow.string.nonEmpty);
 
 		return `${chalk.reset('[')}${this.placeholder(name)}${chalk.reset(']')}`;
@@ -126,48 +127,46 @@ module.exports = class Cli {
 
 
 	//-- Set tasks
-	static init({ pkgPath, pkg } = {}) {
+	init({ pkgPath, pkg } = {}) {
 		ow(pkgPath, ow.any(ow.undefined, ow.string.nonEmpty));
 		ow(pkg, ow.any(ow.undefined, ow.object.nonEmpty));
 
-		delete require.cache[__filename];
-
-		STATIC.pkgPath = pkgPath || path.dirname(module.parent.filename);
-		STATIC.pkg     = pkg     || readPkgUp.sync({ cwd:STATIC.pkgPath }).pkg;
+		__.pkgPath = pkgPath || path.dirname(module.parent.filename);
+		__.pkg     = pkg     || readPkgUp.sync({ cwd:__.pkgPath }).pkg;
 	}
 
 
 	//-- Set tasks
-	static setUsageTasks(commands) {
+	setUsageTasks(commands) {
 		ow(commands, ow.object.nonEmpty);
 
-		STATIC.commands = commands;
+		__.commands = commands;
 		initAutocomplete();
 	}
 
 
 	//-- Get binary name
-	static get binName() {
-		return Object.keys(STATIC.pkg.bin)[0];
+	get binName() {
+		return Object.keys(__.pkg.bin)[0];
 	}
 
 
 	//-- Set full usage
-	static setFullUsage(fullUsage, { showBin = true } = {}) {
+	setFullUsage(fullUsage, { showBin = true } = {}) {
 		ow(fullUsage, ow.object.nonEmpty);
 		ow(showBin, ow.boolean);
 
-		STATIC.fullUsage = fullUsage;
-		STATIC.showBin   = showBin;
+		__.fullUsage = fullUsage;
+		__.showBin   = showBin;
 	}
 
 
 	//-- Get full usage
-	static get fullUsage() {
+	get fullUsage() {
 		const length = (() => {
 			const lengths = [];
-			Object.keys(STATIC.fullUsage).forEach((group) => {
-				STATIC.fullUsage[group].forEach((cmd) => {
+			Object.keys(__.fullUsage).forEach((group) => {
+				__.fullUsage[group].forEach((cmd) => {
 					const { call } = cmdDetails(cmd);
 					lengths.push(stringWidth(call));
 				});
@@ -178,16 +177,16 @@ module.exports = class Cli {
 
 		let usage = `Usage: ${chalk.yellow(this.binName)} ${chalk.cyan('<command>')}\n`;
 
-		Object.keys(STATIC.fullUsage).forEach((group) => {
+		Object.keys(__.fullUsage).forEach((group) => {
 			usage += `\n${chalk.underline(group)}\n`;
 
-			STATIC.fullUsage[group].forEach((cmd) => {
+			__.fullUsage[group].forEach((cmd) => {
 				usage += `${cmdUsage(cmd, length, 5)}\n`;
 			});
 		});
 
-		if (STATIC.showBin) {
-			usage += `\n${this.binName}@${STATIC.pkg.version} ${STATIC.pkgPath}`;
+		if (__.showBin) {
+			usage += `\n${this.binName}@${__.pkg.version} ${__.pkgPath}`;
 		}
 
 		return usage;
@@ -195,18 +194,18 @@ module.exports = class Cli {
 
 
 	//-- Get task usage
-	static getTaskUsage(task) {
+	getTaskUsage(task) {
 		ow(task, ow.any(ow.undefined, ow.string.nonEmpty));
 
 		if (task) {
-			const subs = !Array.isArray(STATIC.commands[task]);
+			const subs = !Array.isArray(__.commands[task]);
 
 			let usage = `${chalk.underline('Usage:')}\n`;
 			if (subs) {
 
 				const length = (() => {
 					const lengths = [];
-					Object.values(STATIC.commands[task]).forEach((subtask) => {
+					Object.values(__.commands[task]).forEach((subtask) => {
 						const { call } = cmdDetails(`${task} ${subtask[0]}`);
 						lengths.push(stringWidth(call));
 					});
@@ -214,7 +213,7 @@ module.exports = class Cli {
 					return Math.max(...lengths);
 				})();
 
-				Object.values(STATIC.commands[task]).forEach((subtask) => {
+				Object.values(__.commands[task]).forEach((subtask) => {
 					usage += `${chalk.yellow(`${this.binName}`)} ${cmdUsage(`${task} ${subtask[0]}`, length, 3)}\n`;
 				});
 			} else {
@@ -229,7 +228,7 @@ module.exports = class Cli {
 
 
 	//-- Show task usage and die
-	static showTaskUsage(meowCli) {
+	showTaskUsage(meowCli) {
 		owIsMeow(meowCli);
 
 		terminal.echo(`\n${this.getTaskUsage(meowCli.input[0])}`);
@@ -242,7 +241,7 @@ module.exports = class Cli {
 
 
 	//-- Raw arguments
-	static get rawArguments() {
+	get rawArguments() {
 		const args = process.argv.slice(2);
 		args.shift();
 
@@ -250,7 +249,7 @@ module.exports = class Cli {
 	}
 
 	//-- Refuse arguments
-	static refuseArguments(meowCli) {
+	refuseArguments(meowCli) {
 		owIsMeow(meowCli);
 
 		if (meowCli.input.length > 1) {
@@ -259,7 +258,7 @@ module.exports = class Cli {
 	}
 
 	//-- Refuse flags
-	static refuseFlags(meowCli) {
+	refuseFlags(meowCli) {
 		owIsMeow(meowCli);
 
 		if (Object.keys(meowCli.flags).length !== 0) {
@@ -268,7 +267,7 @@ module.exports = class Cli {
 	}
 
 	//-- Refuse flags & arguments
-	static refuseFlagsAndArguments(meowCli) {
+	refuseFlagsAndArguments(meowCli) {
 		owIsMeow(meowCli);
 
 		if (meowCli.input.length > 1 || Object.keys(meowCli.flags).length !== 0) {
@@ -277,7 +276,7 @@ module.exports = class Cli {
 	}
 
 	//-- Accept only these flags
-	static validateFlags(meowCli, flagValidations) {
+	validateFlags(meowCli, flagValidations) {
 		owIsMeow(meowCli);
 		ow(flagValidations, ow.object.nonEmpty);
 
@@ -308,42 +307,42 @@ module.exports = class Cli {
 
 
 	//-- List tasks files
-	static initTasksList(tasksPath) {
+	initTasksList(tasksPath) {
 		ow(tasksPath, ow.string.nonEmpty);
 
-		STATIC.tasks.path = tasksPath;
+		__.tasks.path = tasksPath;
 
 		const tasks = [];
 
-		glob.sync(`${STATIC.tasks.path}/**/!(default).js`).forEach((task) => {
-			tasks.push(task.split(STATIC.tasks.path).slice(-1).pop().substring(1).slice(0, -3).replace(/\//g, ':'));
+		glob.sync(`${__.tasks.path}/**/!(default).js`).forEach((task) => {
+			tasks.push(task.split(__.tasks.path).slice(-1).pop().substring(1).slice(0, -3).replace(/\//g, ':'));
 		});
 
-		STATIC.tasks.list = tasks;
+		__.tasks.list = tasks;
 	}
 
 
 	//-- Route to good task
-	static tasksRouter(meowCli) {
+	tasksRouter(meowCli) {
 		owIsMeow(meowCli);
 
 		const [task] = meowCli.input;
 
 		if (task) {
-			if (STATIC.tasks.list.includes(task)) {
-				require(`${STATIC.tasks.path}/${task.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
+			if (__.tasks.list.includes(task)) {
+				require(`${__.tasks.path}/${task.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
 			} else {
 				meowCli.showHelp();
 			}
 		} else {
-			require(`${STATIC.tasks.path}/default`).cli(meowCli);  // eslint-disable-line global-require
+			require(`${__.tasks.path}/default`).cli(meowCli);  // eslint-disable-line global-require
 		}
 	}
 
 
 	//-- Tasks
-	static get tasks() {
-		return STATIC.tasks.list;
+	get tasks() {
+		return __.tasks.list;
 	}
 
 
@@ -352,10 +351,13 @@ module.exports = class Cli {
 
 
 	//-- Is root
-	static isRoot() {
+	isRoot() {
 		const user = os.userInfo();
 
 		return user.uid === 0 || user.gid === 0 || user.username === 'root';
 	}
 
-};
+}
+
+
+module.exports = new Cli();

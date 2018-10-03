@@ -253,6 +253,15 @@ meow object
 
 <br>
 
+### `ow`
+Type: `Object`<br>
+Instance of local `ow`
+
+
+
+
+<br>
+
 ### `refuseFlags(meowCli)`
 Show task usage and quit if CLI call has flags
 
@@ -291,7 +300,7 @@ meow object
 #### flagValidations
 *Required*<br>
 Type: `object` of flag validators<br>
-Whitelisted flags and their `ow` [predicate](https://github.com/sindresorhus/ow/#api)
+Whitelisted flags and their `ow` [predicate](https://github.com/sindresorhus/ow/#api) (use `cli.ow` to ensure to use the same version)
 
 
 
