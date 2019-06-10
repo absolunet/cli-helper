@@ -91,7 +91,8 @@ const initAutocomplete = () => {
 
 
 	// Breaks eggs
-	const complete = omelette(__.pkg.name).tree(autocomplete);
+	const name = path.basename(__.pkg.name);
+	const complete = omelette(name).tree(autocomplete);
 	complete.init();
 };
 
