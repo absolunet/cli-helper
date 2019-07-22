@@ -3,7 +3,6 @@
 //--------------------------------------------------------
 'use strict';
 
-const chalk        = require('chalk');
 const glob         = require('glob');
 const indentString = require('indent-string');
 const omelette     = require('omelette');
@@ -12,25 +11,26 @@ const ow           = require('ow');
 const path         = require('path');
 const readPkgUp    = require('read-pkg-up');
 const stringWidth  = require('string-width');
-const terminal     = require('@absolunet/terminal');
+const { terminal } = require('@absolunet/terminal');
 const pad          = require('@absolunet/terminal-pad');
+const { chalk }    = terminal;
 
 
 //-- Static properties
 const __ = {
-	pkgPath:   '',
-	pkg:       {},
-	commands:  {},
-	fullUsage: {},
-	showBin:   true,
-	tasks:     {
+	packagePath:   '',
+	packageConfig: {},
+	commands:      {},
+	fullUsage:     {},
+	showBin:       true,
+	tasks: {
 		path: '',
 		list: []
 	}
 };
 
 
-const owIsMeow = ow.create(ow.object.nonEmpty.hasKeys('input', 'flags', 'pkg', 'help').label('meowCli'));
+const owIsMeow = ow.create('meowCli', ow.object.nonEmpty.hasKeys('input', 'flags', 'pkg', 'help'));
 
 
 //-- Command details
@@ -91,7 +91,7 @@ const initAutocomplete = () => {
 
 
 	// Breaks eggs
-	const [name] = Object.keys(__.pkg.bin);
+	const [name] = Object.keys(__.packageConfig.bin);
 	const complete = omelette(name).tree(autocomplete);
 	complete.init();
 };
@@ -129,11 +129,11 @@ class Cli {
 
 	//-- Set tasks
 	init({ pkgPath, pkg } = {}) {
-		ow(pkgPath, ow.any(ow.undefined, ow.string.nonEmpty));
-		ow(pkg, ow.any(ow.undefined, ow.object.nonEmpty));
+		ow(pkgPath, ow.optional.string.nonEmpty);
+		ow(pkg, ow.optional.object.nonEmpty);
 
-		__.pkgPath = pkgPath || path.dirname(module.parent.filename);
-		__.pkg     = pkg     || readPkgUp.sync({ cwd:__.pkgPath }).pkg;
+		__.packagePath   = pkgPath || path.dirname(module.parent.filename);
+		__.packageConfig = pkg     || readPkgUp.sync({ cwd: __.packagePath }).package;
 	}
 
 
@@ -148,7 +148,7 @@ class Cli {
 
 	//-- Get binary name
 	get binName() {
-		return Object.keys(__.pkg.bin)[0];
+		return Object.keys(__.packageConfig.bin)[0];
 	}
 
 
@@ -187,7 +187,7 @@ class Cli {
 		});
 
 		if (__.showBin) {
-			usage += `\n${this.binName}@${__.pkg.version} ${__.pkgPath}`;
+			usage += `\n${this.binName}@${__.packageConfig.version} ${__.packagePath}`;
 		}
 
 		return usage;
@@ -196,7 +196,7 @@ class Cli {
 
 	//-- Get task usage
 	getTaskUsage(task) {
-		ow(task, ow.any(ow.undefined, ow.string.nonEmpty));
+		ow(task, ow.optional.string.nonEmpty);
 
 		if (task) {
 			const subs = !Array.isArray(__.commands[task]);
@@ -243,10 +243,10 @@ class Cli {
 
 	//-- Raw arguments
 	get rawArguments() {
-		const args = process.argv.slice(2);
-		args.shift();
+		const parameters = process.argv.slice(2);
+		parameters.shift();
 
-		return args.join(' ');
+		return parameters.join(' ');
 	}
 
 	//-- Refuse arguments
@@ -316,7 +316,7 @@ class Cli {
 		const tasks = [];
 
 		glob.sync(`${__.tasks.path}/**/!(default).js`).forEach((task) => {
-			tasks.push(task.split(__.tasks.path).slice(-1).pop().substring(1).slice(0, -3).replace(/\//g, ':'));
+			tasks.push(task.split(__.tasks.path).slice(-1).pop().substring(1).slice(0, -3).replace(/\//ug, ':'));
 		});
 
 		__.tasks.list = tasks;
@@ -331,7 +331,7 @@ class Cli {
 
 		if (task) {
 			if (__.tasks.list.includes(task)) {
-				require(`${__.tasks.path}/${task.replace(/:/g, '/')}`).cli(meowCli);  // eslint-disable-line global-require
+				require(`${__.tasks.path}/${task.replace(/:/ug, '/')}`).cli(meowCli);  // eslint-disable-line global-require
 			} else {
 				meowCli.showHelp();
 			}
